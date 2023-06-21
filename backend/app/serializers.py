@@ -1,12 +1,13 @@
 from rest_framework import serializers
-from app.models import User, Category, Expenses
+from app.models import Category, Expenses
+from django.contrib.auth.models import User
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__' 
-        read_only_fields = ('user_id', )
+        fields = '__all__'
+        read_only_fields = ('id', )
 
 
 class CategorySerializer(serializers.ModelSerializer):

@@ -5,7 +5,7 @@ from app import views
 
 router = routers.DefaultRouter()
 
-router.register('user', views.UserViewSet, basename='user')
+#router.register('user', views.UserViewSet, basename='user')
 router.register('expenses', views.ExpensesViewSet, basename='expenses')
 router.register('category', views.CategoryViewSet, basename='category')
 
