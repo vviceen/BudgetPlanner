@@ -10,6 +10,7 @@ export const UserContext = createContext(null);
 export function App() {
   const [userData, setUserData] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isRegisted, setIsRegisted] = useState(false)
 
   return (
     <UserContext.Provider

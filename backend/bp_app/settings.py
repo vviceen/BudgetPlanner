@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-cauyhm@7ooig+2%g!*f1qs-0ge$6db1yfn1zkz^urq(rbo2a#p
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -128,7 +128,24 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # cors authotization
-CORS_ALLOWED_ORIGINS = ["http://127.0.0.1:5173"]
+
+
+CSRF_TRUSTED_ORIGINS = [
+'http://localhost:8000',
+'http://localhost',
+]
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+
+CORS_ALLOWED_ORIGINS = ["http://localhost:5173",]
+
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:5173',
+]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',

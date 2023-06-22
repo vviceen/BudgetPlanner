@@ -1,29 +1,64 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { createUser } from "../api/bpapi";
+import { UserContext } from "../App";
+import { useEffect } from "react";
+import budgetApi from "../api/bpapi";
+
+import { useContext } from "react";
+
+
 
 export const Register = () => {
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
+  const { setUserData, setIsRegisted } = useContext(UserContext);
+
   const navigate = useNavigate();
 
-  const onSubmit = handleSubmit(async (data) => {
-    console.log(JSON.stringify(data));
-    if (
-      data.user_name &&
-      data.email &&
-      data.password &&
-      data.confirm_password &&
-      data.password === data.confirm_password
-    ) {
-      await createUser(data);
-      navigate("/login");
+  useEffect(() => {
+    const getCSRFToken = async () => {
+      try {
+        const response = await budgetApi.get('csrf');
+        const csrfToken = response.data.csrf;
+        budgetApi.defaults.headers.common['X-CSRFToken'] = csrfToken;
+        console.log('Token CSRF obtenido:', csrfToken);
+      } catch (error) {
+        console.error('Error al obtener el token CSRF:', error);
+      }
+    };
+
+    getCSRFToken();
+  }, []);
+
+  const onSubmit = async (data) => {
+    console.log(data);
+    try {
+      const csrfToken = budgetApi.defaults.headers.common['X-CSRFToken'];
+      const res = await budgetApi.post("/register", {
+        username: data.username,
+        password1: data.password,
+        password2: data.confirm_password,
+      }, {
+        headers: {
+          'X-CSRFToken': csrfToken,
+        },
+      });
+      console.log(res);
+
+      if (res.status === 200) {
+        setUserData(res.data);
+        setIsRegisted(true);
+        navigate("/login");
+      }
+    } catch (err) {
+      console.error(err);
     }
-  });
+  };
 
   return (
     <>
@@ -33,9 +68,9 @@ export const Register = () => {
           type="text"
           placeholder="Name"
           autoComplete="off"
-          {...register("user_name", { required: true, maxLength: 20 })}
+          {...register("username", { required: true, maxLength: 20 })}
         />
-        {errors.user_name && <span>Este campo es requerido</span>}
+        {errors.username && <span>Este campo es requerido</span>}
 
         <input
           type="text"
@@ -53,7 +88,7 @@ export const Register = () => {
         <input
           type="password"
           placeholder="Password"
-          {...register("password", { required: true, minLength: 8 })}
+          {...register("password1", { required: true, minLength: 8 })}
         />
         {errors.password && (
           <span>
@@ -64,7 +99,7 @@ export const Register = () => {
         <input
           type="password"
           placeholder="Confirm Password"
-          {...register("confirm_password", { required: true, minLength: 8 })}
+          {...register("password2", { required: true, minLength: 8 })}
         />
         {errors.confirm_password && (
           <span>Las contraseñas deben coincidir</span>

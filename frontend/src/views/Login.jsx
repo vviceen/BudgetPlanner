@@ -19,8 +19,8 @@ export const Login = () => {
   const onSubmit = async (data) => {
     try {
       const res = await budgetApi.post("/users/login", {
-        username: data.user_name,
-        password: data.password,
+        username: data.username,
+        password: data.password1,
       });
 
       if (res.status === 200) {
@@ -41,14 +41,14 @@ export const Login = () => {
         <input
           type="text"
           placeholder="Name"
-          {...register("user_name", { required: true, maxLength: 80 })}
+          {...register("username", { required: true, maxLength: 80 })}
         />
         {errors.user_name && <span>Este campo es requerido</span>}
 
         <input
           type="password"
           placeholder="Password"
-          {...register("password", { required: true, minLength: 8 })}
+          {...register("password1", { required: true, minLength: 8 })}
         />
         {errors.password && (
           <span>

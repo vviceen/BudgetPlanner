@@ -21,6 +21,5 @@ from app.views import signup, sign_in, sign_out, ret_crsf
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('app.urls')),
-    path('user/register', signup),
     path('csrf', ret_crsf)
 ]
