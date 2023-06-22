@@ -4,6 +4,7 @@ from app.serializers import UserSerializer, CategorySerializer, ExpensesSerializ
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import redirect
 from django.http import JsonResponse
+from django.middleware.csrf import get_token
 
 # Create your views here.
 
@@ -25,11 +26,14 @@ class ExpensesViewSet(viewsets.ModelViewSet):
 
 
 def signup(request):
-    if request.POST['password1'] == request.POST['password2']:
+    csrf_token = get_token(request)
+    print("hola")
+    password1 = request.POST.get('password1')
+    password2 = request.POST.get('password2')
+    if password1 == password2:
         username = request.POST.get('username')
-        password = request.POST.get('password1')
-        user = User.objects.create_user(
-            username=username, password=password)
+        print(username, password1)
+        user = User.objects.create_user(username=username, password=password1)
         login(request, user)
         user.save()
         return JsonResponse({'username': username}, status=200)
