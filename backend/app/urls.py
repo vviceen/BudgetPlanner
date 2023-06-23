@@ -12,5 +12,4 @@ router.register('category', views.CategoryViewSet, basename='category')
 urlpatterns = [
     path("api/", include(router.urls)),
     path("docs/", include_docs_urls(title="API doc")),
-    path('register', views.signup)
 ]
