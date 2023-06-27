@@ -46,14 +46,14 @@ def signup(request):
 
 
 @login_required
-def sign_out(request):
+def signout(request):
     if request.method == "GET":
         logout(request)
         return HttpResponse("bye bye")
     # return redirect('')  # Cambia 'home' por la URL de tu página de inicio
 
 
-def sign_in(request):
+def signin(request):
     if request.method == "GET":
         return render(request, 'login.html', {
             'form': log_user
@@ -64,29 +64,21 @@ def sign_in(request):
         user = authenticate(username=username, password=password)
         if user:
             login(request, user)
-            return HttpResponse(f'user {username} succesfuly loged in')
-
-
+            return redirect(f'http://localhost:5173/dashboard?user_id={user.id}')
             # return redirect('dashboard')  # Cambia 'dashboard' por la URL de tu página de inicio de sesión exitosa
-"""
-def ret_crsf(request):
-    csrf_token = get_token(request)
-    return JsonResponse({'csrf': csrf_token})
-
-"""
 
 
-@login_required
 def all_expenses(request):
-    if request.method == "GET":
-        user = request.user
+    if request.method == "POST":
+        user_id = request.POST.get('id')
+    else:
+        user = username
         expenses = Expenses.objects.filter(user=user)
         serialized_expenses = [
             {'amount': expense.amount, 'currency': expense.currency} for expense in expenses]
         return HttpResponse(json.dumps(serialized_expenses), content_type='application/json')
 
 
-@login_required
 def new_expense(request):
     if request.method == "POST":
         user = request.user
