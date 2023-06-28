@@ -134,6 +134,7 @@ CSRF_TRUSTED_ORIGINS = [
 'http://localhost:8000',
 'http://localhost',
 ]
+
 CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False
 
@@ -150,3 +151,8 @@ CORS_ALLOW_CREDENTIALS = True
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
+
+#Authentication backends
+AUTHENTICATION_BACKENDS = (
+        'django.contrib.auth.backends.ModelBackend',
+    )

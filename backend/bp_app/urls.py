@@ -16,14 +16,16 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from app.views import signup, sign_in, sign_out, all_expenses, new_expense
+from app.views import signup, signin, signout, all_expenses, new_expense, overview
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('app.urls')),
-    path('user/logout', sign_out),
+    path('logout', signout),
     path('register', signup),
-    path('user/login', sign_in),
+    path('login', signin),
     path('user/expenses', all_expenses),
-    path('user/expenses/new', new_expense)
+    path('user/expenses/new', new_expense),
+    path('dashboard', overview)
+
 ]

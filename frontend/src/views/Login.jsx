@@ -18,15 +18,15 @@ export const Login = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await budgetApi.post("/users/login", {
+      const res = await budgetApi.post("/login", {
         username: data.username,
         password: data.password1,
       });
 
       if (res.status === 200) {
         setUserData(res.data);
-        setIsLoggedIn(true);
-        navigate("/dashboard");
+        //setIsLoggedIn(true);
+        navigate('/dashboard?user_id=1');
       }
     } catch (err) {
       console.error(err);

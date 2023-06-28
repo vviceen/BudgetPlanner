@@ -20,20 +20,20 @@ export const Register = () => {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const getCSRFToken = async () => {
-      try {
-        const response = await budgetApi.get('csrf');
-        const csrfToken = response.data.csrf;
-        budgetApi.defaults.headers.common['X-CSRFToken'] = csrfToken;
-        console.log('Token CSRF obtenido:', csrfToken);
-      } catch (error) {
-        console.error('Error al obtener el token CSRF:', error);
-      }
-    };
+  // useEffect(() => {
+  //   const getCSRFToken = async () => {
+  //     try {
+  //       const response = await budgetApi.get('csrf');
+  //       const csrfToken = response.data.csrf;
+  //       budgetApi.defaults.headers.common['X-CSRFToken'] = csrfToken;
+  //       console.log('Token CSRF obtenido:', csrfToken);
+  //     } catch (error) {
+  //       console.error('Error al obtener el token CSRF:', error);
+  //     }
+  //   };
 
-    getCSRFToken();
-  }, []);
+  //   getCSRFToken();
+  // }, []);
 
   const onSubmit = async (data) => {
     console.log(data);
@@ -41,8 +41,8 @@ export const Register = () => {
       const csrfToken = budgetApi.defaults.headers.common['X-CSRFToken'];
       const res = await budgetApi.post("/register", {
         username: data.username,
-        password1: data.password,
-        password2: data.confirm_password,
+        password1: data.password1,
+        password2: data.password2,
       }, {
         headers: {
           'X-CSRFToken': csrfToken,
@@ -52,8 +52,8 @@ export const Register = () => {
 
       if (res.status === 200) {
         setUserData(res.data);
-        setIsRegisted(true);
-        navigate("/login");
+        //setIsRegisted(true);
+        navigate("/dashboard");
       }
     } catch (err) {
       console.error(err);
