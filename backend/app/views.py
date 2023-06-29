@@ -37,8 +37,10 @@ def signup(request):
                     username=username, password=password1)
                 login(request, user)
                 user.save()
-                return HttpResponse("user created succesfully")
-                # redirect()
+                data = {
+                    "user_id" : user.id
+                }
+                return Response(status=status.HTTP_201_CREATED, data=data)
         except:
             return render(request, 'register.html', {
                 'form': new_user,
@@ -75,7 +77,10 @@ def signin(request):
         print(user)
         if user:
             login(request, user)
-            return redirect(f'http://localhost:5173/dashboard?user_id={user.id}')
+            data = {
+                "user_id" : user.id
+            }
+            return Response(data)
             # return redirect('dashboard')  # Cambia 'dashboard' por la URL de tu página de inicio de sesión exitosa
 
 @api_view(['POST'])
@@ -88,9 +93,13 @@ def all_expenses(request):
             expenses = Expenses.objects.filter(user_id=user_id)
             print(expenses)
             serialized_expenses = ExpensesSerializer(list(expenses), many=True)
+            total_expenses = 0
+            for expense in expenses:
+                total_expenses += expense.amount
             data = {
                 'message': 'Gastos recibidos correctamente',
-                'expenses': serialized_expenses.data
+                'expenses': serialized_expenses.data,
+                'total_expenses': total_expenses
             }
             return Response(data, status=status.HTTP_200_OK)
         except Expenses.DoesNotExist:
@@ -101,16 +110,21 @@ def all_expenses(request):
     else:
         return HttpResponse(status=400)
 
-
 @api_view(['POST'])
 def new_expense(request):
     if request.method == "POST":
-        user = request.data.get('user_id')
-        amount = request.POST.get('amount')
-        category_name = request.POST.get('category_of_expense')
-        category_of_expense = Category.objects.filter(name=category_name)
-        description = request.POST.get('description')
+        user_id = request.data.get('user_id')
+        user = User.objects.get(id=user_id)
+        amount = request.data.get('amount')
+        category_name = request.data.get('category_name')
+        category_of_expense = Category.objects.get(name=category_name)
+        description = request.data.get('description')
+        print(user, amount, category_of_expense, description)
         expense = Expenses(
             amount=amount, category_of_expense=category_of_expense, description=description, user=user)
         expense.save()
-        return HttpResponse('Expense created succesully')
+        expenses = Expenses.objects.filter(user=user)
+        total_expenses = 0
+        for expense in expenses:
+            total_expenses += expense.amount
+        return Response(total_expenses, status=status.HTTP_200_OK)
