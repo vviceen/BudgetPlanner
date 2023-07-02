@@ -10,7 +10,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ./frontend 
     volumes:
       - react_build:/frontend/build
 
