@@ -11,6 +11,12 @@ class Category(models.Model):
     def __str__(self) -> str:
         return self.name
 
+    def create_initial_categories():
+        categories = ['Food', 'Transport', 'Entertainment', 'Health',
+                    'Education', 'Clothing', 'Bills', 'Insurance',
+                    'Travel', 'Other', ]
+        for category in categories:
+            Category.objects.create(name=category)
 
 class Expenses(models.Model):
     """expenses table"""
@@ -22,7 +28,6 @@ class Expenses(models.Model):
     expense_id = models.AutoField(primary_key=True)
     category_of_expense = models.ForeignKey(Category, on_delete=models.CASCADE)
     amount = models.PositiveIntegerField(default=0)
-    user_total_expenses = models.PositiveBigIntegerField(default=0)
     date_of_expense = models.DateTimeField(default=timezone.now)
     currency = models.CharField(choices=currency_choices, max_length=50)
     description = models.CharField(max_length=50)
