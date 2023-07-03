@@ -2,7 +2,6 @@
   "name": "frontend",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -11,7 +10,11 @@
   },
   "dependencies": {
     "axios": "^1.4.0",
+<<<<<<< HEAD
     "chart.js": "^4.3.0",
+=======
+    "daisyui": "^3.1.7",
+>>>>>>> 297bd90d942b203b11abc4a3095589c32d94d81a
     "eslint-plugin-react": "^7.25.3",
     "prop-types": "^15.8.1",
     "react": "^18.2.0",
@@ -26,10 +29,8 @@
     "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
     "@vitejs/plugin-react-swc": "^3.0.0",
-    "autoprefixer": "^10.4.14",
-    "daisyui": "^3.1.7",
-    "eslint": "^7.32.0",
-    "eslint-plugin-react": "^7.25.3",
+    "eslint": "^8.38.0",
+    "eslint-plugin-react": "^7.32.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
     "postcss": "^8.4.24",

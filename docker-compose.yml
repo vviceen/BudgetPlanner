@@ -4,13 +4,13 @@ services:
   backend:
     build:
       context: ./backend
-    command: guicorn core.wsgi --bind 0.0.0.0:8000
+    command: gunicorn backend.wsgi --bind 0.0.0.0:8000
     ports:
       - "8000:8000" 
 
   frontend:
     build:
-      context: ./frontend
+      context: ./frontend 
     volumes:
       - react_build:/frontend/build
 
