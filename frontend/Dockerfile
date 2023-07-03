@@ -1,14 +1,14 @@
 #Compile
-FROM node:15.13-alpine AS build
+FROM node:18.16-alpine AS build
 
 WORKDIR /frontend
 
 COPY . .
 
-COPY frontend/package.json frontend/package-lock.json ./
-RUN npm ci
+COPY ./package.json ./package-lock.json ./
+RUN npm i
 
-COPY frontend ./
+COPY . .
 RUN npm run build
 
 #Production
