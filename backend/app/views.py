@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from .forms import new_user, log_user, add_expense
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.db.models import Sum
 
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
@@ -84,6 +85,21 @@ def signin(request):
             # return redirect('dashboard')  # Cambia 'dashboard' por la URL de tu página de inicio de sesión exitosa
 
 @api_view(['POST'])
+def get_category(request):
+    if request.method == "POST":
+        category_ids = request.data.get('category_ids')  # Cambiar a category_ids
+        categories = Category.objects.filter(category_id__in=category_ids)  # Usar category_id__in
+        serialized_categories = CategorySerializer(categories, many=True)  # Usar many=True
+        data = {
+            'message': 'Categorías recibidas correctamente',
+            'categories': serialized_categories.data  # Cambiar a categories
+        }
+        return Response(data, status=status.HTTP_200_OK)
+    else:
+        return HttpResponse(status=400)
+
+
+@api_view(['POST'])
 def all_expenses(request):
     if request.method == "POST":
         try:
@@ -93,13 +109,22 @@ def all_expenses(request):
             expenses = Expenses.objects.filter(user_id=user_id)
             print(expenses)
             serialized_expenses = ExpensesSerializer(list(expenses), many=True)
+            categorias = Category.objects.all()
+            valores_totales = []
+            for categoria in categorias:
+                total_gastos = Expenses.objects.filter(user=user_id, category_of_expense=categoria).aggregate(total=Sum('amount'))['total']
+                if total_gastos is None:
+                    total_gastos = 0
+                valores_totales.append(total_gastos)
+            print(valores_totales)
             total_expenses = 0
             for expense in expenses:
                 total_expenses += expense.amount
             data = {
                 'message': 'Gastos recibidos correctamente',
                 'expenses': serialized_expenses.data,
-                'total_expenses': total_expenses
+                'total_expenses': total_expenses,
+                'categorias_totales': valores_totales
             }
             return Response(data, status=status.HTTP_200_OK)
         except Expenses.DoesNotExist:
@@ -128,3 +153,38 @@ def new_expense(request):
         for expense in expenses:
             total_expenses += expense.amount
         return Response(total_expenses, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def delete_expense(request):
+    if request.method == "POST":
+        expense_id = request.data.get('expense_id')
+        expense = Expenses.objects.get(expense_id=expense_id)
+        expense.delete()
+        return Response(status=status.HTTP_200_OK)
+    else:
+        return HttpResponse(status=400)
+
+@api_view(['POST'])
+def edit_expense(request):
+    if request.method == "POST":
+        expense_id = request.data.get('expense_id')
+        amount = request.data.get('amount')
+        description = request.data.get('description')
+        expense = Expenses.objects.get(id=expense_id)
+        expense.amount = amount
+        expense.description = description
+        expense.save()
+        return Response(status=status.HTTP_200_OK)
+    else:
+        return HttpResponse(status=400)
+
+@api_view(['POST'])
+def get_categories(request):
+    if request.method == "POST":
+        user_expenses = Expenses.objects.filter(user_id=request.data.get('user_id'))
+        ordered_categories = Category.objects.filter()
+        categories = Category.objects.all()
+        serialized_categories = CategorySerializer(list(categories), many=True)
+        return Response(serialized_categories.data, status=status.HTTP_200_OK)
+    else:
+        return HttpResponse(status=400)

@@ -23,7 +23,7 @@ export default {
 
           "info": "#58595B",
 
-          "success": "#36d399",
+          "success": "#00b456",
 
           "warning": "#fbbd23",
 
