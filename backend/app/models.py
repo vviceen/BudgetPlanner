@@ -33,3 +33,7 @@ class Expenses(models.Model):
     description = models.CharField(max_length=50)
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, default=None)
+
+class Budget(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
+    budget = models.PositiveIntegerField(default=0)
