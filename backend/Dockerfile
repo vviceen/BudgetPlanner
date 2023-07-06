@@ -6,6 +6,8 @@ WORKDIR /backend
 COPY requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
+EXPOSE 8000
+
 COPY . .
 
-CMD [ "gunicorn", "--bind", "0.0.0.0:8000", "manage:app"]
+CMD [ "gunicorn", "--bind", "0.0.0.0:8000", "bp_app.wsgi"]
