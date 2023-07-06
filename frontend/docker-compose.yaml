@@ -9,4 +9,4 @@ services:
     environment:
       - NGINX_PORT=80
     volumes:
-      - ./build:/usr/share/nginx/html
+      - ./dist:/usr/share/nginx/html
