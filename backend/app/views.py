@@ -87,6 +87,7 @@ def signin(request):
             }
             return Response(data)
             # return redirect('dashboard')  # Cambia 'dashboard' por la URL de tu página de inicio de sesión exitosa
+        return Response(status=status.HTTP_401_OK)
 
 @api_view(['POST'])
 def get_category(request):
@@ -105,7 +106,7 @@ def get_category(request):
 def all_expenses(request):
         try:
             user_id = request.query_params.get('user')
-            expenses = Expenses.objects.filter(user=user_id).select_related('category_of_expense').order_by('-date_of_expense').values()
+            expenses = Expenses.objects.filter(user=user_id).order_by('-date_of_expense').values()
             print(expenses)
             total = 0
             # categories = 
@@ -161,23 +162,30 @@ def expenses(request):
     if request.method == 'DELETE':
         return delete_expense(request)
 
-@api_view(['POST'])
+@api_view(['GET', 'POST'])
+def budget(request):
+    if request.method == 'GET':
+        return get_budget(request)
+    if request.method == 'POST':
+        return new_budget(request)
+
+
 def new_budget(request):
     if request.method == "POST":
-        user_id = request.data.get('user_id')
+        user_id = request.data.get('user')
+        user_budget = Budget.objects.filter(user=user_id)
         user = User.objects.get(id=user_id)
         budget = request.data.get('budget')
-        b = Budget(user = user, budget = budget)
-        b.save()
+        if not user_budget:
+            b = Budget(user = user, budget = budget)
+            b.save()
+        else:
+            user_budget.update(budget = budget)
         return Response(status=status.HTTP_200_OK)
 
-@api_view(['POST'])
 def get_budget(request):
-    if request.method == "POST":
-        user_budget = Budget.objects.filter(user_id=request.data.get('user_id'))
-        return Response(user_budget, status=status.HTTP_200_OK)
-    else:
-        return HttpResponse(status=400)
+    user_budget = BudgetSerializer(Budget.objects.filter(user=request.query_params.get('user')), many=True).data
+    return Response(user_budget, status=status.HTTP_200_OK)
 
 @api_view(['POST'])
 def edit_expense(request):
