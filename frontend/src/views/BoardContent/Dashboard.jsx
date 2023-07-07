@@ -44,14 +44,14 @@ const Dashboard = () => {
 	useEffect(() => {
 		const getAllExpenses = async () => {
 			try {
-				const response = await budgetApi.post("/user/expenses", {
-					user_id: userData.user_id,
-				});
+				const response = await budgetApi.get(
+					`/user/expenses?user=${userData.user_id}`
+				);
 				setResData(response.data);
 
-				const res = await budgetApi.get("/api/budget/", {
-					user: userData.user_id,
-				});
+				const res = await budgetApi.get(
+					`/api/budget/?user=${userData.user_id}`
+				);
 
 				const filtered = res.data.filter(
 					(budget) => budget.user === userData.user_id
@@ -122,7 +122,7 @@ const Dashboard = () => {
 			}) => {
 				return (
 					<div
-						className=" border-b px-4 py-2 border-gray-200 gap-6"
+						className=" border-b px-4 py-2 border-gray-200 gap-6 w-full overflow-y-scroll"
 						key={expense_id}
 					>
 						<div className="flex flex-row justify-between items-center pb-2">
@@ -152,10 +152,10 @@ const Dashboard = () => {
 				includes information such as current balance, total income and expenses,
 				expense categories Dashboard of expense categories and financial goals.
 			</p> */}
-			<div className="flex flex-row justify-center gap-20 p-12">
+			<div className="flex flex-row justify-center gap-20 p-12 bg-white rounded-md">
 				<div
 					className="flex flex-col-reverse items-center gap-8"
-					style={{ flex: "1 1 0px", maxWidth: "350px" }}
+					style={{ flex: "1 1 0px", maxWidth: "400px" }}
 				>
 					<div className="stats shadow-md">
 						<div className="stat">
@@ -174,7 +174,9 @@ const Dashboard = () => {
 								</svg>
 							</div>
 							<div className="stat-title">Income</div>
-							<div className="stat-value">{currentBudget}</div>
+							<div className="stat-value">
+								{currentBudget - resData.total_expenses}
+							</div>
 							<div className="stat-desc">Uruguayan Pesos</div>
 						</div>
 						<div className="stat">
@@ -205,8 +207,8 @@ const Dashboard = () => {
 					</div>
 				</div>
 				<div
-					className="flex items-center justify-center"
-					style={{ flex: "1 1 0px", maxWidth: "300px" }}
+					className="flex flex-col items-center justify-center shadow-md p-4 rounded-md"
+					style={{ flex: "1 1 0px", maxWidth: "400px" }}
 				>
 					{renderExpenses()}
 				</div>
