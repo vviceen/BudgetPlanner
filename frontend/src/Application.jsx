@@ -2,6 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Dashboard from "./views/BoardContent/Dashboard";
 import Account from "./views/BoardContent/Account";
 import NavBar from "./NavBar";
+import Error404 from "./views/404";
 
 import useAuth from "./hooks/useAuth";
 import propTypes from "prop-types";
@@ -19,7 +20,7 @@ const Application = ({ userData }) => {
 			<Routes>
 				<Route index element={<Dashboard />} />
 				<Route path="account" element={<Account />} />
-				<Route path="*" element={<h1>Error page</h1>} />
+				<Route path="*" element={<Error404 />} />
 			</Routes>
 		</>
 	);

@@ -10,18 +10,18 @@ const NavBar = () => {
 	};
 
 	return (
-		<nav className="p-6 bg-gray-300">
-			<ul className="text-2xl font-medium flex flex-row gap-8 justify-center uppercase text-blue-900">
+		<nav className="p-6" style={{ backgroundColor: "#0388c6" }}>
+			<ul className="text-2xl  flex flex-row gap-8 justify-center text-white">
 				<li>
 					<Link to="/app/account">Account</Link>
 				</li>
+				|
 				<li>
 					<Link to="/app/">Dashboard</Link>
 				</li>
+				|
 				<li>
-					<button className="uppercase" onClick={() => logout()}>
-						Log out
-					</button>
+					<button onClick={() => logout()}>Log out</button>
 				</li>
 			</ul>
 		</nav>

@@ -1,6 +1,7 @@
 import { Login } from "./views/Login";
 import { Register } from "./views/Register";
 import { Routes, Route } from "react-router-dom";
+import Error404 from "./views/404";
 
 import { createContext, useState } from "react";
 import Application from "./Application";
@@ -17,7 +18,7 @@ export function App() {
 				<Route path="login" element={<Login />} />
 				<Route path="register" element={<Register />} />
 				<Route path="app/*" element={<Application userData={userData} />} />
-				<Route path="*" element={<div>Error 404</div>} />
+				<Route path="*" element={<Error404 />} />
 			</Routes>
 		</UserContext.Provider>
 	);
