@@ -35,5 +35,6 @@ class Expenses(models.Model):
         User, on_delete=models.CASCADE, default=None)
 
 class Budget(models.Model):
+    budget_id = models.AutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, default=None)
     budget = models.PositiveIntegerField(default=0)

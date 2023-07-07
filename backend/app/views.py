@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from app.models import User, Category, Expenses
-from app.serializers import CategorySerializer, ExpensesSerializer, UserSerializer
+from app.models import User, Category, Expenses, Budget
+from app.serializers import CategorySerializer, ExpensesSerializer, UserSerializer, BudgetSerializer
 from django.contrib.auth import login, logout, authenticate
 from django.shortcuts import redirect
 from django.http import JsonResponse, HttpResponse
@@ -20,6 +20,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
 class ExpensesViewSet(viewsets.ModelViewSet):
     queryset = Expenses.objects.all()
     serializer_class = ExpensesSerializer
+
+class BudgetViewSet(viewsets.ModelViewSet):
+    queryset = Budget.objects.all()
+    serializer_class = BudgetSerializer
+
 
 @api_view(['POST', 'GET'])
 def signup(request):
@@ -153,6 +158,24 @@ def new_expense(request):
         for expense in expenses:
             total_expenses += expense.amount
         return Response(total_expenses, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def new_budget(request):
+    if request.method == "POST":
+        user_id = request.data.get('user_id')
+        user = User.objects.get(id=user_id)
+        budget = request.data.get('budget')
+        b = Budget(user = user, budget = budget)
+        b.save()
+        return Response(status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def get_budget(request):
+    if request.method == "POST":
+        user_budget = Budget.objects.filter(user_id=request.data.get('user_id'))
+        return Response(user_budget, status=status.HTTP_200_OK)
+    else:
+        return HttpResponse(status=400)
 
 @api_view(['POST'])
 def delete_expense(request):

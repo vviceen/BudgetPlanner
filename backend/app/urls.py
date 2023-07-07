@@ -8,6 +8,7 @@ router = routers.DefaultRouter()
 #router.register('user', views.UserViewSet, basename='user')
 router.register('expenses', views.ExpensesViewSet, basename='expenses')
 router.register('category', views.CategoryViewSet, basename='category')
+router.register('budget', views.BudgetViewSet, basename='budget')
 
 urlpatterns = [
     path("api/", include(router.urls)),
