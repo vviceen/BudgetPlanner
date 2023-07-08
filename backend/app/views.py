@@ -17,7 +17,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
 
 class ExpensesViewSet(viewsets.ModelViewSet):
-    queryset = Expenses.objects.all()
+    queryset = Expenses.objects.filter(user=)
     serializer_class = ExpensesSerializer
 
 class BudgetViewSet(viewsets.ModelViewSet):
