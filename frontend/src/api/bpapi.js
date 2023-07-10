@@ -2,9 +2,11 @@ import axios from "axios";
 
 const budgetApi = axios.create({
 	withCredentials: true,
-	baseURL:
-		"https://jvalenzani-hbtn-automatic-guide-q64qx5xgpw93xp9-8000.preview.app.github.dev",
+	baseURL: "http://localhost:8000",
 });
+
+budgetApi.defaults.xsrfCookieName = "csrftoken";
+budgetApi.defaults.xsrfHeaderName = "X-CSRFToken";
 
 export default budgetApi;
 

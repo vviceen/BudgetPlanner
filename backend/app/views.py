@@ -109,7 +109,7 @@ def all_expenses(request):
             expenses = Expenses.objects.filter(user=user_id).order_by('-date_of_expense').values()
             print(expenses)
             total = 0
-            # categories = 
+            # categories =
             cat_dict = {}
             for o in expenses:
                 o['category'] = CategorySerializer(Category.objects.get(category_id=o['category_of_expense_id'])).data

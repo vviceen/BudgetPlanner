@@ -40,6 +40,7 @@ const Dashboard = () => {
 
 	const [resData, setResData] = useState({});
 	const [currentBudget, setCurrentBudget] = useState(0);
+	const [shouldUpdate, setShouldUpdate] = useState(false);
 
 	useEffect(() => {
 		const getAllExpenses = async () => {
@@ -68,7 +69,7 @@ const Dashboard = () => {
 		if (userData?.user_id) {
 			getAllExpenses();
 		}
-	}, [userData]);
+	}, [userData, shouldUpdate]);
 
 	const chartData = {
 		labels: labels,
@@ -103,7 +104,7 @@ const Dashboard = () => {
 		if (!resData.expenses || resData.expenses.length === 0) {
 			return (
 				<div className="flex flex-col items-center justify-center gap-4 py-8">
-					<h3 className="text-2xl font-bold text-gray-600">No expenses yet</h3>
+					<h3 className="text-2xl font-bold text-gray-600">No expenses yet.</h3>
 					<p className="text-gray-400">
 						You don&apos;t have any expenses yet. Add one by filling the form
 						down below :)
@@ -122,7 +123,7 @@ const Dashboard = () => {
 			}) => {
 				return (
 					<div
-						className=" border-b px-4 py-2 border-gray-200 gap-6 w-full overflow-y-scroll"
+						className=" border-b px-4 py-2 border-gray-200 gap-6 w-full overflow-hidden"
 						key={expense_id}
 					>
 						<div className="flex flex-row justify-between items-center pb-2">
@@ -207,13 +208,13 @@ const Dashboard = () => {
 					</div>
 				</div>
 				<div
-					className="flex flex-col items-center justify-center shadow-md p-4 rounded-md"
+					className="flex flex-col items-center shadow-md py-4 px-8 overflow-y-auto rounded-md"
 					style={{ flex: "1 1 0px", maxWidth: "400px" }}
 				>
 					{renderExpenses()}
 				</div>
 			</div>
-			<Transactions />
+			<Transactions setShouldUpdate={setShouldUpdate} />
 		</main>
 	);
 };

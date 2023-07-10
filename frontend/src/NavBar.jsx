@@ -10,8 +10,8 @@ const NavBar = () => {
 	};
 
 	return (
-		<nav className="p-6" style={{ backgroundColor: "#0388c6" }}>
-			<ul className="text-2xl  flex flex-row gap-8 justify-center text-white">
+		<nav className="p-4" style={{ backgroundColor: "#0388c6" }}>
+			<ul className="text-2xl flex flex-row gap-8 justify-center text-white">
 				<li>
 					<Link to="/app/account">Account</Link>
 				</li>
