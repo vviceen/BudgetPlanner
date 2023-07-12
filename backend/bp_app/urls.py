@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from app.views import signup, signin, signout, all_expenses, new_expense, overview, get_category, delete_expense
+from app.views import signup, signin, signout, all_expenses, new_expense, overview, get_category, delete_expense, expenses, budget
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,10 +24,11 @@ urlpatterns = [
     path('logout', signout),
     path('register', signup),
     path('login', signin),
-    path('user/expenses', all_expenses),
-    path('user/expenses/new', new_expense),
+    path('user/expenses', expenses),
+    path('user/budget', budget),
+    # path('user/expenses', all_expenses),
+    # path('user/expenses/new', new_expense),
+    # path('user/expenses/delete', delete_expense),
     path('dashboard', overview),
     path('category', get_category),
-    path('user/expenses/delete', delete_expense),
-
 ]

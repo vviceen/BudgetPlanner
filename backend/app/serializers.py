@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from app.models import Category, Expenses
+from app.models import Category, Expenses, Budget
 from django.contrib.auth.models import User
 
 
@@ -22,3 +22,9 @@ class ExpensesSerializer(serializers.ModelSerializer):
         model = Expenses
         fields = '__all__'
         read_only_fields = ('expense_id', )
+
+class BudgetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Budget
+        fields = '__all__'
+        read_only_fields = ('budget_id', )

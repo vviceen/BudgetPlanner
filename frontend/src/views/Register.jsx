@@ -1,128 +1,121 @@
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
-import { useEffect } from "react";
 import budgetApi from "../api/bpapi";
+import { Link } from "react-router-dom";
+import Logo from "../assets/logo.png";
 
 import { useContext } from "react";
 
-
-
 export const Register = () => {
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+	const { setUserData } = useContext(UserContext);
 
-  const { setUserData, setIsRegisted } = useContext(UserContext);
+	const navigate = useNavigate();
 
-  const navigate = useNavigate();
+	const onSubmit = async (data) => {
+		console.log(data);
+		try {
+			const res = await budgetApi.post("/register", {
+				username: data.username,
+				password1: data.password1,
+				password2: data.password2,
+			});
+			console.log(res);
 
-  // useEffect(() => {
-  //   const getCSRFToken = async () => {
-  //     try {
-  //       const response = await budgetApi.get('csrf');
-  //       const csrfToken = response.data.csrf;
-  //       budgetApi.defaults.headers.common['X-CSRFToken'] = csrfToken;
-  //       console.log('Token CSRF obtenido:', csrfToken);
-  //     } catch (error) {
-  //       console.error('Error al obtener el token CSRF:', error);
-  //     }
-  //   };
+			if (res.status === 201) {
+				setUserData(res.data);
+				//setIsRegisted(true);
+				console.log(res.data);
+				navigate(`/app`);
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	};
 
-  //   getCSRFToken();
-  // }, []);
+	return (
+		<>
+			<div className="hero min-h-screen bg-base-200">
+				<div className="hero-content flex-col lg:flex-row-reverse">
+					<div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+						<div className="card-body px-12">
+							<div className="text-center">
+								<img src={Logo} alt="Budget Planner Logo" className="p-4" />
+								<h1 className="text-4xl font-bold mb-5">Register</h1>
+							</div>
+							<form onSubmit={handleSubmit(onSubmit)}>
+								<input
+									type="text"
+									placeholder="Name"
+									className="input input-bordered input-primary w-full max-w-xs mb-3"
+									autoComplete="off"
+									{...register("username", { required: true, maxLength: 20 })}
+								/>
+								{errors.username && <span>Este campo es obligatorio</span>}
 
-  const onSubmit = async (data) => {
-    console.log(data);
-    try {
-      const csrfToken = budgetApi.defaults.headers.common['X-CSRFToken'];
-      const res = await budgetApi.post("/register", {
-        username: data.username,
-        password1: data.password1,
-        password2: data.password2,
-      }, {
-        headers: {
-          'X-CSRFToken': csrfToken,
-        },
-      });
-      console.log(res);
+								<input
+									type="text"
+									placeholder="Email"
+									className="input input-bordered input-primary w-full max-w-xs mb-3"
+									autoComplete="off"
+									{...register("email", {
+										required: true,
+										pattern: /^\S+@\S+$/i,
+									})}
+								/>
+								{errors.email && (
+									<span>
+										Este campo es obligatorio y debe ser una dirección de correo
+										electrónico válida
+									</span>
+								)}
 
-      if (res.status === 201) {
-        setUserData(res.data);
-        //setIsRegisted(true);
-        console.log(res.data);
-        navigate(`/dashboard?user_id=${res.data.user_id}`);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
+								<input
+									type="password"
+									placeholder="Password"
+									className="input input-bordered input-primary w-full max-w-xs mb-3"
+									{...register("password1", { required: true, minLength: 8 })}
+								/>
+								{errors.password1 && (
+									<span>
+										Este campo es obligatorio y debe tener al menos 8 caracteres
+									</span>
+								)}
 
-  return (
-    <>
-      <div className="hero min-h-screen bg-base-200">
-        <div className="hero-content flex-col lg:flex-row-reverse">
-          <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
-            <div className="card-body">
-              <div className="text-center">
-                <h1 className="text-5xl font-bold">Register</h1>
-              </div>
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <input
-                  type="text"
-                  placeholder="Name"
-                  className="input input-bordered input-primary w-full max-w-xs"
-                  autoComplete="off"
-                  {...register("username", { required: true, maxLength: 20 })}
-                />
-                {errors.username && <span>Este campo es obligatorio</span>}
+								<input
+									type="password"
+									placeholder="Confirm Password"
+									className="input input-bordered input-primary w-full max-w-xs mb-3"
+									{...register("password2", { required: true, minLength: 8 })}
+								/>
+								{errors.password2 && (
+									<span>Las contraseñas deben coincidir</span>
+								)}
 
-                <input
-                  type="text"
-                  placeholder="Email"
-                  className="input input-bordered input-primary w-full max-w-xs"
-                  autoComplete="off"
-                  {...register("email", { required: true, pattern: /^\S+@\S+$/i })}
-                />
-                {errors.email && (
-                  <span>
-                    Este campo es obligatorio y debe ser una dirección de correo
-                    electrónico válida
-                  </span>)}
-
-                <input
-                  type="password"
-                  placeholder="Password"
-                  className="input input-bordered input-primary w-full max-w-xs"
-                  {...register("password1", { required: true, minLength: 8 })}
-                />
-                {errors.password1 && (
-                  <span>
-                    Este campo es obligatorio y debe tener al menos 8 caracteres
-                  </span>
-                )}
-
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  className="input input-bordered input-primary w-full max-w-xs"
-                  {...register("password2", { required: true, minLength: 8 })}
-                />
-                {errors.password2 && (
-                  <span>Las contraseñas deben coincidir</span>
-                )}
-
-                <div className="form-control mt-6">
-                  <input type="submit" className="btn btn-primary" value="Signup"/>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
+								<div className="form-control">
+									<input
+										type="submit"
+										className="btn btn-primary"
+										value="Signup"
+									/>
+								</div>
+							</form>
+							<p className="pt-5 text-center">
+								Already have an account?{" "}
+								<Link className="text-blue-500 underline" to="/login">
+									Log In
+								</Link>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</>
+	);
 };

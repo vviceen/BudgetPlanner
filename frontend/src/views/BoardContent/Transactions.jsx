@@ -1,180 +1,95 @@
 import { useForm } from "react-hook-form";
-import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import budgetApi from "../../api/bpapi";
 
-const Transactions = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+import { UserContext } from "../../App";
+import { useContext } from "react";
 
-  const [expenses, setExpenses] = useState([]);
+import propTypes from "prop-types";
 
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
+const Transactions = ({ setShouldUpdate }) => {
+	const {
+		register,
+		handleSubmit,
+		formState: { errors },
+	} = useForm();
 
-  const userId = searchParams.get("user_id");
+	const { userData } = useContext(UserContext);
 
-  useEffect(() => {
-    const getAllExpenses = async () => {
-      try {
-        const response = await budgetApi.post("/user/expenses", {
-          user_id: userId,
-        });
-        const expensesData = response.data.expenses;
+	// console.log(userData);
 
-        // Obtener los IDs de categorías únicos
-        const categoryIds = [
-          ...new Set(
-            expensesData.map((expense) => expense.category_of_expense)
-          ),
-        ];
+	const onSubmit = async (data) => {
+		// console.log(data);
 
-        // Hacer una solicitud para obtener todas las categorías correspondientes a los IDs
-        const categoriesResponse = await budgetApi.post("/category", {
-          category_ids: categoryIds,
-        });
+		// console.log(userData.user_id);
 
-        const categoriesData = categoriesResponse.data.categories; // Cambiar a categoriesData
+		try {
+			const res = await budgetApi.post("/api/expenses/", {
+				amount: data.amount,
+				user: userData.user_id,
+				category_of_expense: data.category_name,
+				description: data.description,
+				currency: "UYU",
+			});
+			if (res.status === 201) {
+				// console.log(res.data);
+				setShouldUpdate((prevState) => !prevState);
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	};
 
-        // Asignar el nombre de la categoría a cada gasto
-        const expensesWithCategories = expensesData.map((expense) => {
-          const category = categoriesData.find(
-            (category) => category.category_id === expense.category_of_expense
-          );
-          const categoryName = category ? category.name : "";
-          return { ...expense, categoryName };
-        });
+	return (
+		<div className="flex justify-center p-8">
+			<form
+				onSubmit={handleSubmit(onSubmit)}
+				className="flex flex-col justify-center items-start gap-4"
+			>
+				<input
+					type="number"
+					placeholder="Amount"
+					className="input input-bordered input-primary w-full max-w-xs"
+					min={0}
+					autoComplete="off"
+					{...register("amount", { required: true })}
+				/>
+				{errors.amount && <span>Invalid amount.</span>}
 
-        setExpenses(expensesWithCategories);
-      } catch (error) {
-        console.error("Error al obtener los gastos:", error);
-      }
-    };
+				<select
+					defaultValue=""
+					className="select select-primary w-full max-w-xs"
+					{...register("category_name", { required: true })}
+				>
+					<option value="">Choose category</option>
+					<option value="1">Food</option>
+					<option value="2">Transport</option>
+					<option value="3">Entertainment</option>
+					<option value="4">Health</option>
+					<option value="5">Education</option>
+					<option value="6">Clothing</option>
+					<option value="7">Bills</option>
+					<option value="8">Insurance</option>
+					<option value="9">Travel</option>
+					<option value="10">Other</option>
+				</select>
+				{errors.category_name && <span>Please choose a category.</span>}
+				<input
+					type="text"
+					className="input input-bordered input-primary w-full max-w-xs"
+					placeholder="Description"
+					autoComplete="off"
+					{...register("description", { required: true, maxLength: 80 })}
+				/>
+				{errors.description && <span>Invalid description.</span>}
 
-    if (userId) {
-      getAllExpenses();
-    }
-  }, [userId]);
+				<input type="submit" className="btn btn-primary w-full" />
+			</form>
+		</div>
+	);
+};
 
-  const onSubmit = async (data) => {
-    console.log(data);
-    try {
-      const res = await budgetApi.post("/user/expenses/new", {
-        user_id: userId,
-        amount: data.amount,
-        category_name: data.category_name,
-        description: data.description,
-      });
-      if (res.status === 200) {
-        console.log(res.data);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const removeExpense = async (id) => {
-    console.log(id);
-    setIsDeleting(true);
-    try {
-      const res = await budgetApi.post("/user/expenses/delete", {
-        expense_id: id
-      });
-      if (res.status === 200) {
-        console.log(res.data);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
- 
-
-  return (
-    <>
-      <h1 className="text-5xl font-bold">Transactions</h1>
-      <p className="py-6">
-        Here you can enter and manage your daily transactions. It provides
-        a simple form to record the details of each transaction,
-        such as date, description, category and amount. It is also useful to have
-        options to import transactions from bank files or third party services.
-        third-party services.
-      </p>
-      <div className="grid gap-4 grid-cols-2">
-        {expenses.map((expense, index) => (
-          <div className="card w-96 bg-base-100 shadow-md" key={index}>
-            <div className="card-body">
-              <div className="card-actions justify-end">
-                <button className="btn btn-square btn-sm"  onClick={() => removeExpense(expense.expense_id)}>
-                  <svg xmlns="http://www.w3.org/2000/svg"
-                    x="0px"
-                    y="0px"
-                    width="32"
-                    height="32"
-                    viewBox="0 0 32 32">
-                      <path d="M 7.21875 5.78125 L 5.78125 7.21875 L 14.5625 16 L 5.78125 24.78125 L 7.21875 26.21875 L 16 17.4375 L 24.78125 26.21875 L 26.21875 24.78125 L 17.4375 16 L 26.21875 7.21875 L 24.78125 5.78125 L 16 14.5625 Z"></path>
-                  </svg>
-                </button>
-              </div>
-              <h5 className="card-title">Amount: {expense.amount}</h5>
-              <p className="card-text">Description: {expense.description}</p>
-              <p className="card-text">Category: {expense.categoryName}</p>
-            </div>
-            {isDeleting && <p>Deleting expense...</p>}
-          </div>
-        ))}
-      </div>
-      <h2 className="text-xl">Add Expense:</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <input
-          type="number"
-          placeholder="Amount"
-          className="input input-bordered input-primary w-full max-w-xs"
-          min={0}
-          autoComplete="off"
-          {...register("amount", { required: true })}
-        />
-        {errors.amount && <span>Error con el monto</span>}
-
-        <select
-          defaultValue="Deselected"
-          className="select select-primary w-full max-w-xs"
-          {...register("category_name", { required: true })}
-        >
-          <option value="Deselected" disabled>
-            Choose category
-          </option>
-          <option value="Food">Food</option>
-          <option value="Transport">Transport</option>
-          <option value="Entertainment">Entertainment</option>
-          <option value="Health">Health</option>
-          <option value="Education">Education</option>
-          <option value="Clothing">Clothing</option>
-          <option value="Bills">Bills</option>
-          <option value="Insurance">Insurance</option>
-          <option value="Travel">Travel</option>
-          <option value="Other">Other</option>
-        </select>
-
-        <input
-          type="text"
-          className="input input-bordered input-primary w-full max-w-xs"
-          placeholder="Description"
-          autoComplete="off"
-          {...register("description", { required: true, maxLength: 80 })}
-        />
-        {errors.amount && <span>Error con el monto</span>}
-
-        <input type="submit" className="btn btn-primary" />
-      </form>
-    </>
-  );
+Transactions.propTypes = {
+	setShouldUpdate: propTypes.func.isRequired,
 };
 
 export default Transactions;
